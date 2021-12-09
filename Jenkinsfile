@@ -19,7 +19,7 @@ pipeline {
 //          stage("Git Clone"){
 //              steps{
 //
-//                 git credentialsId: 'GIT_HUB_CREDS', url: 'https://github.com/jitin03/qastack-auth.git'
+//                 git credentialsId: 'GIT_HUB_CREDS', url: 'https://github.com/jitin03/qastack-component.git'
 //              }
 //          }
         stage('Pre Test') {
@@ -39,10 +39,10 @@ pipeline {
         stage("Docker build"){
             steps{
             sh 'docker version'
-            sh 'docker build -t stack-auth .'
+            sh 'docker build -t stack-component .'
             sh 'docker image list'
-            sh 'docker tag stack-auth mehuljitin/stack-auth:stack-auth'
-            // sh 'docker run -d -e DB_USER=$DB_USER -e DB_PASSWD=$DB_PASSWD -e DB_ADDR=$DB_ADDR -e DB_NAME=$DB_NAME -p 8090:8090 stack-auth'
+            sh 'docker tag stack-component mehuljitin/stack-component:stack-component'
+            // sh 'docker run -d -e DB_USER=$DB_USER -e DB_PASSWD=$DB_PASSWD -e DB_ADDR=$DB_ADDR -e DB_NAME=$DB_NAME -p 8090:8090 stack-component'
             }
         }
 
@@ -54,7 +54,7 @@ pipeline {
                  withCredentials([string(credentialsId: 'DOCKER_HUB_CREDS', variable: 'PASSWORD')]) {
         sh 'docker login -u mehuljitin -p $PASSWORD'
                  }
-            sh 'docker push  mehuljitin/stack-auth:stack-auth'
+            sh 'docker push  mehuljitin/stack-component:stack-component'
             }
         }
     }
