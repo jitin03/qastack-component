@@ -92,7 +92,7 @@ func Start() {
 	router.Use(am.authorizationHandler())
 
 	//logger.Info(fmt.Sprintf("Starting server on %s:%s ...", address, port))
-	if err := http.ListenAndServe(":8091", handler); err != nil {
+	if err := http.ListenAndServe(":8093", handler); err != nil {
 		fmt.Println("Failed to set up server")
 
 	}
