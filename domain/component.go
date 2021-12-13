@@ -6,9 +6,9 @@ import (
 )
 
 type Component struct {
-	Component_Id int    `db:"id"`
+	Component_Id string    `db:"id"`
 	Name         string `db:"name"`
-	Project_Id   int    `db:"project_id"`
+	Project_Id   string    `db:"project_id"`
 }
 
 func (c Component) ToDto() dto.AddComponentResponse {

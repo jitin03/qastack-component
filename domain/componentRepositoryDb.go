@@ -2,9 +2,10 @@ package domain
 
 import (
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"qastack-components/errs"
 	logger "qastack-components/loggers"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type ComponentRepositoryDb struct {
@@ -14,7 +15,7 @@ type ComponentRepositoryDb struct {
 func (d ComponentRepositoryDb) AddComponent(c Component) (*Component, *errs.AppError) {
 
 	sqlInsert := "INSERT INTO component (name, project_id) values ($1, $2) RETURNING id"
-	var id int
+	var id string
 	err := d.client.QueryRow(sqlInsert, c.Name, c.Project_Id).Scan(&id)
 
 	if err != nil {
