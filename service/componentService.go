@@ -8,7 +8,7 @@ import (
 
 type ComponentService interface {
 	AddComponent(request dto.AddComponentRequest) (*dto.AddComponentResponse, *errs.AppError)
-	AllComponent() ([]dto.AddComponentResponse, *errs.AppError)
+	AllComponent(projectKey string ,pageId int) ([]dto.AddComponentResponse, *errs.AppError)
 	DeleteComponent(id int) (dto.DeleteComponentResponse, *errs.AppError)
 	UpdateComponent(id int, request dto.UpdateComponentRequest) (dto.UpdateComponentResponse, *errs.AppError)
 }
@@ -50,9 +50,9 @@ func (s DefaultUserService) UpdateComponent(id int, req dto.UpdateComponentReque
 	return message, nil
 
 }
-func (s DefaultUserService) AllComponent() ([]dto.AddComponentResponse, *errs.AppError) {
+func (s DefaultUserService) AllComponent(projectKey string , pageId int) ([]dto.AddComponentResponse, *errs.AppError) {
 
-	components, err := s.repo.AllComponent()
+	components, err := s.repo.AllComponent(projectKey,pageId)
 	if err != nil {
 		return nil, err
 	}

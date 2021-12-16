@@ -3,11 +3,12 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"qastack-components/dto"
 	"qastack-components/service"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type ComponentHandler struct {
@@ -34,8 +35,12 @@ func (u ComponentHandler) AddComponent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u ComponentHandler) AllComponent(w http.ResponseWriter, r *http.Request) {
+	page := r.URL.Query().Get("page")
+	projectKey := r.URL.Query().Get("projectKey")
 
-	components, err := u.service.AllComponent()
+	pageId, _ := strconv.Atoi(page)
+	// projectKeyId, _ := strconv.Atoi(projectKey)
+	components, err := u.service.AllComponent(projectKey,pageId)
 
 	if err != nil {
 		fmt.Println("Inside error" + err.Message)

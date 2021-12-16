@@ -6,6 +6,7 @@ import (
 	logger "qastack-components/loggers"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type ComponentRepositoryDb struct {
@@ -26,15 +27,15 @@ func (d ComponentRepositoryDb) AddComponent(c Component) (*Component, *errs.AppE
 	return &c, nil
 }
 
-func (d ComponentRepositoryDb) AllComponent() ([]Component, *errs.AppError) {
+func (d ComponentRepositoryDb) AllComponent(projectKey string ,pageId int) ([]Component, *errs.AppError) {
 	var err error
 	components := make([]Component, 0)
-
-	findAllSql := "select id,name, project_id from component"
-	err = d.client.Select(&components, findAllSql)
+	logrus.Info(projectKey)
+	findAllSql := "select id,name, project_id from component where project_id=$1 LIMIT $2"
+	err = d.client.Select(&components, findAllSql,projectKey,pageId)
 
 	if err != nil {
-		fmt.Println("Error while querying customers table " + err.Error())
+		fmt.Println("Error while querying component table " + err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
 
