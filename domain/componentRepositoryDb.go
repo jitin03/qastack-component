@@ -42,7 +42,7 @@ func (d ComponentRepositoryDb) AllComponent(projectKey string ,pageId int) ([]Co
 	return components, nil
 }
 
-func (d ComponentRepositoryDb) DeleteComponent(id int) *errs.AppError {
+func (d ComponentRepositoryDb) DeleteComponent(id string) *errs.AppError {
 
 	deleteSql := "DELETE FROM component WHERE id = $1"
 	res, err := d.client.Exec(deleteSql, id)
@@ -59,7 +59,7 @@ func (d ComponentRepositoryDb) DeleteComponent(id int) *errs.AppError {
 
 }
 
-func (d ComponentRepositoryDb) UpdateComponent(id int, newComponent Component) ( *errs.AppError) {
+func (d ComponentRepositoryDb) UpdateComponent(id string, newComponent Component) ( *errs.AppError) {
 
 	updateComponentSql := "UPDATE component SET name = $1 WHERE id = $2"
 	res, err := d.client.Exec(updateComponentSql,newComponent.Name,id)

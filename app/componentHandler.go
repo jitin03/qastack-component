@@ -55,7 +55,7 @@ func (u ComponentHandler) AllComponent(w http.ResponseWriter, r *http.Request) {
 func (u ComponentHandler) DeleteComponent(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	// convert the id type from string to int
-	id, _ := strconv.Atoi(params["id"])
+	id := params["id"]
 
 	result,error := u.service.DeleteComponent(id)
 	if error != nil {
@@ -72,7 +72,7 @@ func (u ComponentHandler) DeleteComponent(w http.ResponseWriter, r *http.Request
 func (u ComponentHandler) UpdateComponent(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	// convert the id type from string to int
-	id, _ := strconv.Atoi(params["id"])
+	id:=params["id"]
 	var request dto.UpdateComponentRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {

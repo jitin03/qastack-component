@@ -9,15 +9,15 @@ import (
 type ComponentService interface {
 	AddComponent(request dto.AddComponentRequest) (*dto.AddComponentResponse, *errs.AppError)
 	AllComponent(projectKey string ,pageId int) ([]dto.AddComponentResponse, *errs.AppError)
-	DeleteComponent(id int) (dto.DeleteComponentResponse, *errs.AppError)
-	UpdateComponent(id int, request dto.UpdateComponentRequest) (dto.UpdateComponentResponse, *errs.AppError)
+	DeleteComponent(id string) (dto.DeleteComponentResponse, *errs.AppError)
+	UpdateComponent(id string, request dto.UpdateComponentRequest) (dto.UpdateComponentResponse, *errs.AppError)
 }
 
 type DefaultUserService struct {
 	repo domain.ComponentRepository
 }
 
-func (s DefaultUserService) DeleteComponent(id int) (dto.DeleteComponentResponse, *errs.AppError) {
+func (s DefaultUserService) DeleteComponent(id string) (dto.DeleteComponentResponse, *errs.AppError) {
 
 	err := s.repo.DeleteComponent(id)
 	if err != nil {
@@ -31,7 +31,7 @@ func (s DefaultUserService) DeleteComponent(id int) (dto.DeleteComponentResponse
 	return message, nil
 }
 
-func (s DefaultUserService) UpdateComponent(id int, req dto.UpdateComponentRequest) (dto.UpdateComponentResponse, *errs.AppError) {
+func (s DefaultUserService) UpdateComponent(id string, req dto.UpdateComponentRequest) (dto.UpdateComponentResponse, *errs.AppError) {
 	c := domain.Component{
 		Name:       req.Name,
 		Project_Id: req.Project_id,

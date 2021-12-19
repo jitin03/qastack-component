@@ -26,6 +26,6 @@ func (c Component) ToAddComponentResponseDto() *dto.AddComponentResponse {
 type ComponentRepository interface {
 	AddComponent(component Component) (*Component, *errs.AppError)
 	AllComponent(projectKey string, pageId int) ([]Component, *errs.AppError)
-	DeleteComponent(id int)(*errs.AppError)
-	UpdateComponent(id int,newComponent Component)( *errs.AppError)
+	DeleteComponent(id string)(*errs.AppError)
+	UpdateComponent(id string,newComponent Component)( *errs.AppError)
 }
