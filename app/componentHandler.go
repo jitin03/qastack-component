@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/labstack/gommon/log"
 )
 
 type ComponentHandler struct {
@@ -16,16 +17,17 @@ type ComponentHandler struct {
 }
 
 func (u ComponentHandler) AddComponent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET,POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization")
 	var request dto.AddComponentRequest
+	projectId := r.URL.Query().Get("projectId")
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		WriteResponse(w, http.StatusBadRequest, err.Error())
 	} else {
 
-		userId, appError := u.service.AddComponent(request)
+		userId, appError := u.service.AddComponent(request, projectId)
 		if appError != nil {
 			WriteResponse(w, appError.Code, appError.AsMessage())
 		} else {
@@ -36,11 +38,27 @@ func (u ComponentHandler) AddComponent(w http.ResponseWriter, r *http.Request) {
 
 func (u ComponentHandler) AllComponent(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
-	projectKey := r.URL.Query().Get("projectKey")
+	projectKey := r.URL.Query().Get("projectId")
 
 	pageId, _ := strconv.Atoi(page)
 	// projectKeyId, _ := strconv.Atoi(projectKey)
-	components, err := u.service.AllComponent(projectKey,pageId)
+	components, err := u.service.AllComponent(projectKey, pageId)
+
+	if err != nil {
+
+		WriteResponse(w, err.Code, err.AsMessage())
+	} else {
+
+		WriteResponse(w, http.StatusOK, components)
+	}
+}
+
+func (u ComponentHandler) GetComponent(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id := params["id"]
+
+	// projectKeyId, _ := strconv.Atoi(projectKey)
+	components, err := u.service.GetComponent(id)
 
 	if err != nil {
 		fmt.Println("Inside error" + err.Message)
@@ -57,7 +75,9 @@ func (u ComponentHandler) DeleteComponent(w http.ResponseWriter, r *http.Request
 	// convert the id type from string to int
 	id := params["id"]
 
-	result,error := u.service.DeleteComponent(id)
+	log.Info("update called")
+
+	result, error := u.service.DeleteComponent(id)
 	if error != nil {
 		fmt.Println("Inside error" + error.Message)
 
@@ -72,14 +92,15 @@ func (u ComponentHandler) DeleteComponent(w http.ResponseWriter, r *http.Request
 func (u ComponentHandler) UpdateComponent(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	// convert the id type from string to int
-	id:=params["id"]
+	id := params["id"]
+	// projectKeyId, _ := strconv.Atoi(projectKey)
 	var request dto.UpdateComponentRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		WriteResponse(w, http.StatusBadRequest, err.Error())
 	} else {
 
-		userId, appError := u.service.UpdateComponent(id,request)
+		userId, appError := u.service.UpdateComponent(id, request)
 		if appError != nil {
 			WriteResponse(w, appError.Code, appError.AsMessage())
 		} else {

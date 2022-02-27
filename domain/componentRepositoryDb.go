@@ -13,11 +13,11 @@ type ComponentRepositoryDb struct {
 	client *sqlx.DB
 }
 
-func (d ComponentRepositoryDb) AddComponent(c Component) (*Component, *errs.AppError) {
+func (d ComponentRepositoryDb) AddComponent(c Component, projectId string) (*Component, *errs.AppError) {
 
-	sqlInsert := "INSERT INTO component (name, project_id) values ($1, $2) RETURNING id"
+	sqlInsert := "INSERT INTO component (name, project_id,create_date,update_date) values ($1, $2,$3,$4) ON CONFLICT ON CONSTRAINT component_project_un DO NOTHING RETURNING id"
 	var id string
-	err := d.client.QueryRow(sqlInsert, c.Name, c.Project_Id).Scan(&id)
+	err := d.client.QueryRow(sqlInsert, c.Name, c.Project_Id, c.CreateDate, c.UpdateDate).Scan(&id)
 
 	if err != nil {
 		logger.Error("Error while creating new component: " + err.Error())
@@ -27,12 +27,25 @@ func (d ComponentRepositoryDb) AddComponent(c Component) (*Component, *errs.AppE
 	return &c, nil
 }
 
-func (d ComponentRepositoryDb) AllComponent(projectKey string ,pageId int) ([]Component, *errs.AppError) {
+func (d ComponentRepositoryDb) GetComponent(id string) (*Component, *errs.AppError) {
+	var component Component
+	findComponent := "select id,name, project_id from component where id=$1"
+	err := d.client.Get(&component, findComponent, id)
+
+	if err != nil {
+		fmt.Println("Error while querying component table " + err.Error())
+		return nil, errs.NewUnexpectedError("Unexpected database error")
+	}
+
+	return &component, nil
+}
+
+func (d ComponentRepositoryDb) AllComponent(projectKey string, pageId int) ([]Component, *errs.AppError) {
 	var err error
 	components := make([]Component, 0)
 	logrus.Info(projectKey)
-	findAllSql := "select id,name, project_id from component where project_id=$1 LIMIT $2"
-	err = d.client.Select(&components, findAllSql,projectKey,pageId)
+	findAllSql := "select id,name, project_id,create_date from component where project_id=$1 LIMIT $2"
+	err = d.client.Select(&components, findAllSql, projectKey, pageId)
 
 	if err != nil {
 		fmt.Println("Error while querying component table " + err.Error())
@@ -59,16 +72,16 @@ func (d ComponentRepositoryDb) DeleteComponent(id string) *errs.AppError {
 
 }
 
-func (d ComponentRepositoryDb) UpdateComponent(id string, newComponent Component) ( *errs.AppError) {
+func (d ComponentRepositoryDb) UpdateComponent(id string, newComponent Component) *errs.AppError {
 
-	updateComponentSql := "UPDATE component SET name = $1 WHERE id = $2"
-	res, err := d.client.Exec(updateComponentSql,newComponent.Name,id)
+	updateComponentSql := "UPDATE component SET name = $1 ,update_date =$2 WHERE id = $3"
+	res, err := d.client.Exec(updateComponentSql, newComponent.Name, newComponent.UpdateDate, id)
 	if err != nil {
-		return  errs.NewUnexpectedError("Unexpected error from database")
+		return errs.NewUnexpectedError("Unexpected error from database")
 	}
 	count, err := res.RowsAffected()
 	if err != nil {
-		return  errs.NewUnexpectedError("Unexpected error from database")
+		return errs.NewUnexpectedError("Unexpected error from database")
 	}
 	fmt.Println(count)
 	return nil

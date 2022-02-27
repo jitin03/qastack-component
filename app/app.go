@@ -1,7 +1,6 @@
 package app
 
 import (
-
 	"encoding/json"
 	"fmt"
 	"os"
@@ -14,9 +13,10 @@ import (
 	"github.com/rs/cors"
 
 	//"log"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"net/http"
 	//"os"
 )
 
@@ -39,10 +39,8 @@ func getDbClient() *sqlx.DB {
 	client.SetConnMaxLifetime(time.Minute * 3)
 	client.SetMaxOpenConns(10)
 	client.SetMaxIdleConns(10)
-	return  client
+	return client
 }
-
-
 
 func Start() {
 
@@ -60,7 +58,7 @@ func Start() {
 
 	// define routes
 
-	router.HandleFunc("/api/component/health", func (w http.ResponseWriter,r *http.Request) {
+	router.HandleFunc("/api/component/health", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("Running...")
 	})
 
@@ -73,6 +71,10 @@ func Start() {
 		Methods(http.MethodGet).Name("AllComponent")
 
 	router.
+		HandleFunc("/api/component/{id}", c.GetComponent).
+		Methods(http.MethodGet).Name("GetComponent")
+
+	router.
 		HandleFunc("/api/component/delete/{id}", c.DeleteComponent).
 		Methods(http.MethodDelete).Name("DeleteComponent")
 
@@ -81,10 +83,10 @@ func Start() {
 		Methods(http.MethodPut).Name("UpdateComponent")
 
 	cor := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"},
-		AllowedHeaders: []string{ "Content-Type", "Authorization","Referer"},
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization", "Referer"},
 		AllowCredentials: true,
-		AllowedMethods: []string{"GET","PUT","DELETE","POST"},
+		AllowedMethods:   []string{"GET", "PUT", "DELETE", "POST"},
 	})
 
 	handler := cor.Handler(router)
@@ -98,5 +100,3 @@ func Start() {
 	}
 
 }
-
-
