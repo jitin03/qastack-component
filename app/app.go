@@ -83,7 +83,7 @@ func Start() {
 		Methods(http.MethodPut).Name("UpdateComponent")
 
 	cor := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"*"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization", "Referer"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "PUT", "DELETE", "POST"},

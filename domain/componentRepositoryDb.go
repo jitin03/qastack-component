@@ -44,7 +44,7 @@ func (d ComponentRepositoryDb) AllComponent(projectKey string, pageId int) ([]Co
 	var err error
 	components := make([]Component, 0)
 	logrus.Info(projectKey)
-	findAllSql := "select id,name, project_id,create_date from component where project_id=$1 LIMIT $2"
+	findAllSql := "select id,name, project_id,create_date from component where project_id=$1 order by update_date LIMIT $2"
 	err = d.client.Select(&components, findAllSql, projectKey, pageId)
 
 	if err != nil {

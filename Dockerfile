@@ -1,4 +1,5 @@
 FROM golang:alpine AS builder
+RUN apk add git
 
 # Set necessary environmet variables needed for our image
 ENV GO111MODULE=on \
